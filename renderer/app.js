@@ -4,6 +4,15 @@ var activeRange = '1D';
 
 var pad = function(n) { return String(n).padStart(2, '0'); };
 
+var SOURCE_MAP = {
+  'Google':        { rateId: 'xe-rate',      diffId: 'xe-diff',      tileId: 'tile-xe'      },
+  'Wise':          { rateId: 'wise-rate',     diffId: 'wise-diff',    tileId: 'tile-wise'    },
+  'Western Union': { rateId: 'wu-rate',       diffId: 'wu-diff',      tileId: 'tile-wu'      },
+  'Remitly':       { rateId: 'remitly-rate',  diffId: 'remitly-diff', tileId: 'tile-remitly' },
+  'Xoom':          { rateId: 'xoom-rate',     diffId: 'xoom-diff',    tileId: 'tile-xoom'    },
+  'Crobo':         { rateId: 'crobo-rate',    diffId: 'crobo-diff',   tileId: 'tile-crobo'   },
+};
+
 /* ── Clocks ─────────────────────────────────────────────────────────────── */
 function tickClocks() {
   var now = new Date();
@@ -61,6 +70,7 @@ function drawChart(range) {
     options: {
       responsive: false,
       animation: { duration: 350 },
+      layout: { padding: { left: 2, right: 8, top: 4, bottom: 0 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -74,12 +84,11 @@ function drawChart(range) {
       scales: {
         x: { display: false },
         y: {
-          display: true, position: 'right',
-          grid: { color: 'rgba(255,255,255,0.04)' },
+          display: true, position: 'left',
+          grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
           ticks: {
-            color: '#333',
-            font: { size: 9, family: '-apple-system' },
-            maxTicksLimit: 3,
+            color: '#555', font: { size: 9, family: '-apple-system' },
+            maxTicksLimit: 3, padding: 4,
             callback: function(v) { return v.toFixed(1); }
           },
           border: { display: false }
@@ -93,15 +102,14 @@ function drawChart(range) {
   var badge = document.getElementById('delta-badge');
   badge.textContent = (delta >= 0 ? '+' : '') + delta.toFixed(4) + ' (' + (delta >= 0 ? '+' : '') + pct + '%)';
   badge.className = 'delta-badge' + (delta < 0 ? ' down' : '');
-  var rangeLabels = { '1D': 'today', '1W': 'this week', '1M': 'this month', '3M': '3 months', '1Y': 'this year' };
-  document.getElementById('delta-sub').textContent = rangeLabels[range] || range;
+  var rl = { '1D': 'today', '1W': 'this week', '1M': 'this month', '3M': '3 months', '1Y': 'this year' };
+  document.getElementById('delta-sub').textContent = rl[range] || range;
 }
 
 /* ── Tiles ──────────────────────────────────────────────────────────────── */
 function diffLabel(rate, base) {
   var d = rate - base;
-  var p = ((d / base) * 100).toFixed(2);
-  return (d >= 0 ? '+' : '') + p + '%';
+  return (d >= 0 ? '+' : '') + ((d / base) * 100).toFixed(2) + '%';
 }
 
 function setTile(rateId, diffId, tileId, rate, base) {
@@ -109,70 +117,37 @@ function setTile(rateId, diffId, tileId, rate, base) {
   var de = document.getElementById(diffId);
   if (!re || !de) return;
   if (rate === null || rate === undefined) {
-    re.textContent = 'N/A';
-    de.textContent = '—';
-    return;
+    re.textContent = 'N/A'; de.textContent = '—'; return;
   }
   re.textContent = rate.toFixed(2);
   de.textContent = (base !== null) ? diffLabel(rate, base) : 'benchmark';
 }
 
 function renderTiles(rates) {
-  var xe      = null, wise = null, wu = null, remitly = null, xoom = null, crobo = null;
+  var googleRate = null;
   for (var i = 0; i < rates.length; i++) {
-    var r = rates[i];
-    if (r.source === 'XE (mid-market)') xe = r;
-    else if (r.source === 'Wise')          wise = r;
-    else if (r.source === 'Western Union') wu = r;
-    else if (r.source === 'Remitly')       remitly = r;
-    else if (r.source === 'Xoom')          xoom = r;
-    else if (r.source === 'Crobo')         crobo = r;
+    if (rates[i].source === 'Google' && rates[i].rate) {
+      googleRate = rates[i].rate; break;
+    }
   }
-
-  var base = xe && xe.rate ? xe.rate : null;
-
-  if (base) {
-    midRate = base;
-    document.getElementById('rate-number').textContent = base.toFixed(2);
+  if (googleRate) {
+    midRate = googleRate;
+    document.getElementById('rate-number').textContent = googleRate.toFixed(2);
   }
-
-  setTile('xe-rate',      'xe-diff',      'tile-xe',      xe      ? xe.rate      : null, null);
-  setTile('wise-rate',    'wise-diff',    'tile-wise',    wise    ? wise.rate    : null, base);
-  setTile('wu-rate',      'wu-diff',      'tile-wu',      wu      ? wu.rate      : null, base);
-  setTile('remitly-rate', 'remitly-diff', 'tile-remitly', remitly ? remitly.rate : null, base);
-  setTile('xoom-rate',    'xoom-diff',    'tile-xoom',    xoom    ? xoom.rate    : null, base);
-  setTile('crobo-rate',   'crobo-diff',   'tile-crobo',   crobo   ? crobo.rate   : null, base);
-
+  for (var j = 0; j < rates.length; j++) {
+    var r = rates[j];
+    var map = SOURCE_MAP[r.source];
+    if (!map) continue;
+    setTile(map.rateId, map.diffId, map.tileId, r.rate, r.source === 'Google' ? null : googleRate);
+  }
   var now = new Date();
   document.getElementById('tiles-status').textContent =
     'scraped at ' + pad(now.getUTCHours()) + ':' + pad(now.getUTCMinutes()) + ' UTC';
-
   updateCalc();
   drawChart(activeRange);
 }
 
-/* ── Fetch ──────────────────────────────────────────────────────────────── */
-function fetchAll() {
-  document.getElementById('rate-number').textContent = '…';
-  document.getElementById('tiles-status').textContent = 'scraping live rates…';
-
-  window.electronAPI.fetchRates()
-    .then(function(result) {
-      if (result.ok) {
-        renderTiles(result.rates);
-      } else {
-        document.getElementById('rate-number').textContent = 'ERR';
-        document.getElementById('tiles-status').textContent = 'scrape failed — tap refresh';
-      }
-    })
-    .catch(function(err) {
-      document.getElementById('rate-number').textContent = 'ERR';
-      document.getElementById('tiles-status').textContent = 'error — tap refresh';
-      console.error('[app] fetchAll error:', err);
-    });
-}
-
-/* ── Calculator ─────────────────────────────────────────────────────────── */
+/* ── Calculator (inline panel) ──────────────────────────────────────────── */
 function updateCalc() {
   if (!midRate) return;
   var usd = parseFloat(document.getElementById('calc-usd').value);
@@ -182,6 +157,25 @@ function updateCalc() {
   var inr = parseFloat(document.getElementById('calc-inr').value);
   document.getElementById('usd-result').textContent =
     (!isNaN(inr) && inr > 0) ? (inr / midRate).toFixed(4) : '—';
+}
+
+/* ── Fetch ──────────────────────────────────────────────────────────────── */
+function fetchAll() {
+  document.getElementById('rate-number').textContent = '…';
+  document.getElementById('tiles-status').textContent = 'scraping live rates…';
+  window.electronAPI.fetchRates()
+    .then(function(result) {
+      if (result.ok) renderTiles(result.rates);
+      else {
+        document.getElementById('rate-number').textContent = 'ERR';
+        document.getElementById('tiles-status').textContent = 'scrape failed — tap refresh';
+      }
+    })
+    .catch(function(err) {
+      document.getElementById('rate-number').textContent = 'ERR';
+      document.getElementById('tiles-status').textContent = 'error — tap refresh';
+      console.error('[app] fetchAll error:', err);
+    });
 }
 
 /* ── Events ─────────────────────────────────────────────────────────────── */
@@ -197,12 +191,7 @@ document.getElementById('calc-close').addEventListener('click', function() {
 
 document.getElementById('calc-usd').addEventListener('input', updateCalc);
 document.getElementById('calc-inr').addEventListener('input', updateCalc);
-
 document.getElementById('refresh-btn').addEventListener('click', fetchAll);
-
-document.getElementById('close-btn').addEventListener('click', function() {
-  window.electronAPI.quit();
-});
 
 document.querySelectorAll('.tab').forEach(function(t) {
   t.addEventListener('click', function() {

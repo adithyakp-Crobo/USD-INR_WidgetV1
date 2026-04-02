@@ -7,138 +7,138 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="widget">
+<div class="widget">
 
-    <div class="titlebar">
-      <span class="titlebar-label">USD / INR</span>
-      <div class="titlebar-actions">
-        <button class="icon-btn" id="refresh-btn" title="Refresh rates">
-          <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
-            <path d="M13.65 2.35A8 8 0 1 0 15 8h-2a6 6 0 1 1-1.05-3.4L10 7h5V2l-1.35.35z" fill="currentColor"/>
-          </svg>
-        </button>
-        <button class="icon-btn close" id="close-btn" title="Quit">✕</button>
-      </div>
+  <div class="titlebar">
+    <div class="titlebar-spacer"></div>
+    <span class="titlebar-label">USD / INR</span>
+    <div class="titlebar-actions">
+      <button class="refresh-btn" id="refresh-btn" title="Refresh rates">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+          <path d="M13.65 2.35A8 8 0 1 0 15 8h-2a6 6 0 1 1-1.05-3.4L10 7h5V2l-1.35.35z" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
-
-    <div class="time-row">
-      <div class="time-block">
-        <div class="time-val" id="utc-time">--:--:--</div>
-        <div class="time-zone">UTC</div>
-      </div>
-      <div class="time-block right">
-        <div class="time-val" id="ist-time">--:--:--</div>
-        <div class="time-zone">IST</div>
-      </div>
-    </div>
-
-    <div class="rate-section" id="rate-section">
-      <div class="rate-label">1 USD =</div>
-      <div class="rate-display">
-        <span class="rate-number" id="rate-number">—</span>
-        <span class="rate-currency">INR</span>
-      </div>
-      <div class="rate-source-row">
-        <span class="rate-source-tag">mid-market · XE</span>
-        <span class="rate-hint">tap to convert</span>
-      </div>
-    </div>
-
-    <div class="delta-row">
-      <span class="delta-badge" id="delta-badge">—</span>
-      <span class="delta-sub" id="delta-sub">loading…</span>
-    </div>
-
-    <div class="chart-wrap">
-      <canvas id="rateChart"></canvas>
-    </div>
-
-    <div class="range-tabs">
-      <button class="tab active" data-range="1D">1D</button>
-      <button class="tab" data-range="1W">1W</button>
-      <button class="tab" data-range="1M">1M</button>
-      <button class="tab" data-range="3M">3M</button>
-      <button class="tab" data-range="1Y">1Y</button>
-    </div>
-
-    <div class="tiles-section">
-      <div class="tiles-heading">Platform rates</div>
-      <div class="tiles-grid">
-
-        <div class="tile tile-xe tile-xe-wide" id="tile-xe">
-          <div class="tile-label-group">
-            <div class="tile-name">Google</div>
-            <div class="tile-sub">interbank rate · benchmark</div>
-          </div>
-          <div class="tile-right">
-            <div class="tile-rate" id="xe-rate">—</div>
-            <div class="tile-diff" id="xe-diff">benchmark</div>
-          </div>
-        </div>
-
-        <div class="tile tile-wise" id="tile-wise">
-          <div class="tile-name">Wise</div>
-          <div class="tile-rate" id="wise-rate">—</div>
-          <div class="tile-diff" id="wise-diff">—</div>
-        </div>
-
-        <div class="tile tile-wu" id="tile-wu">
-          <div class="tile-name">W. Union</div>
-          <div class="tile-rate" id="wu-rate">—</div>
-          <div class="tile-diff" id="wu-diff">—</div>
-        </div>
-
-        <div class="tile tile-remitly" id="tile-remitly">
-          <div class="tile-name">Remitly</div>
-          <div class="tile-rate" id="remitly-rate">—</div>
-          <div class="tile-diff" id="remitly-diff">—</div>
-        </div>
-
-        <div class="tile tile-xoom" id="tile-xoom">
-          <div class="tile-name">Xoom</div>
-          <div class="tile-rate" id="xoom-rate">—</div>
-          <div class="tile-diff" id="xoom-diff">—</div>
-        </div>
-
-        <div class="tile tile-crobo" id="tile-crobo">
-          <div class="tile-name">Crobo</div>
-          <div class="tile-rate" id="crobo-rate">—</div>
-          <div class="tile-diff" id="crobo-diff">—</div>
-        </div>
-
-      </div>
-      <div class="tiles-status" id="tiles-status">fetching live rates…</div>
-    </div>
-
-    <div class="calc-panel" id="calc-panel">
-      <div class="calc-title">Converter</div>
-      <div class="calc-row">
-        <div class="calc-field">
-          <span class="calc-sym">$</span>
-          <input class="calc-input" type="number" id="calc-usd" value="1" min="0" step="any" />
-        </div>
-        <div class="calc-arrow">→</div>
-        <div class="calc-result">
-          <div class="calc-val" id="inr-result">—</div>
-          <div class="calc-cur">INR</div>
-        </div>
-      </div>
-      <div class="calc-row" style="margin-top:8px">
-        <div class="calc-field">
-          <span class="calc-sym">₹</span>
-          <input class="calc-input" type="number" id="calc-inr" placeholder="0" min="0" step="any" />
-        </div>
-        <div class="calc-arrow">→</div>
-        <div class="calc-result">
-          <div class="calc-val" id="usd-result">—</div>
-          <div class="calc-cur">USD</div>
-        </div>
-      </div>
-      <button class="calc-close" id="calc-close">▲ close</button>
-    </div>
-
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-  <script src="app.js"></script>
+
+  <div class="time-row">
+    <div class="time-block">
+      <div class="time-val" id="utc-time">--:--:--</div>
+      <div class="time-zone">UTC</div>
+    </div>
+    <div class="time-block right">
+      <div class="time-val" id="ist-time">--:--:--</div>
+      <div class="time-zone">IST</div>
+    </div>
+  </div>
+
+  <div class="rate-section" id="rate-section">
+    <div class="rate-label">1 USD =</div>
+    <div class="rate-display">
+      <span class="rate-number" id="rate-number">—</span>
+      <span class="rate-currency">INR</span>
+    </div>
+    <div class="rate-source-row">
+      <span class="rate-source-tag">Google · interbank rate</span>
+      <span class="rate-hint">tap to convert</span>
+    </div>
+  </div>
+
+  <div class="delta-row">
+    <span class="delta-badge" id="delta-badge">—</span>
+    <span class="delta-sub" id="delta-sub">—</span>
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="rateChart"></canvas>
+  </div>
+
+  <div class="range-tabs">
+    <button class="tab active" data-range="1D">1D</button>
+    <button class="tab" data-range="1W">1W</button>
+    <button class="tab" data-range="1M">1M</button>
+    <button class="tab" data-range="3M">3M</button>
+    <button class="tab" data-range="1Y">1Y</button>
+  </div>
+
+  <div class="tiles-section">
+    <div class="tiles-heading">Platform rates</div>
+    <div class="tiles-grid">
+
+      <div class="tile tile-xe tile-xe-wide" id="tile-xe">
+        <div class="tile-label-group">
+          <div class="tile-name">Google</div>
+          <div class="tile-sub">interbank rate · benchmark</div>
+        </div>
+        <div class="tile-right">
+          <div class="tile-rate" id="xe-rate">—</div>
+          <div class="tile-diff" id="xe-diff">benchmark</div>
+        </div>
+      </div>
+
+      <div class="tile tile-wise" id="tile-wise">
+        <div class="tile-name">Wise</div>
+        <div class="tile-rate" id="wise-rate">—</div>
+        <div class="tile-diff" id="wise-diff">—</div>
+      </div>
+
+      <div class="tile tile-wu" id="tile-wu">
+        <div class="tile-name">W. Union</div>
+        <div class="tile-rate" id="wu-rate">—</div>
+        <div class="tile-diff" id="wu-diff">—</div>
+      </div>
+
+      <div class="tile tile-remitly" id="tile-remitly">
+        <div class="tile-name">Remitly</div>
+        <div class="tile-rate" id="remitly-rate">—</div>
+        <div class="tile-diff" id="remitly-diff">—</div>
+      </div>
+
+      <div class="tile tile-xoom" id="tile-xoom">
+        <div class="tile-name">Xoom</div>
+        <div class="tile-rate" id="xoom-rate">—</div>
+        <div class="tile-diff" id="xoom-diff">—</div>
+      </div>
+
+      <div class="tile tile-crobo" id="tile-crobo">
+        <div class="tile-name">Crobo</div>
+        <div class="tile-rate" id="crobo-rate">—</div>
+        <div class="tile-diff" id="crobo-diff">—</div>
+      </div>
+
+    </div>
+    <div class="tiles-status" id="tiles-status">fetching live rates…</div>
+  </div>
+
+  <div class="calc-panel" id="calc-panel">
+    <div class="calc-title">Converter</div>
+    <div class="calc-row">
+      <div class="calc-field">
+        <span class="calc-sym">$</span>
+        <input class="calc-input" type="number" id="calc-usd" value="1" min="0" step="any" />
+      </div>
+      <div class="calc-arrow">→</div>
+      <div class="calc-result">
+        <div class="calc-val" id="inr-result">—</div>
+        <div class="calc-cur">INR</div>
+      </div>
+    </div>
+    <div class="calc-row" style="margin-top:8px">
+      <div class="calc-field">
+        <span class="calc-sym">₹</span>
+        <input class="calc-input" type="number" id="calc-inr" placeholder="0" min="0" step="any" />
+      </div>
+      <div class="calc-arrow">→</div>
+      <div class="calc-result">
+        <div class="calc-val" id="usd-result">—</div>
+        <div class="calc-cur">USD</div>
+      </div>
+    </div>
+    <button class="calc-close" id="calc-close">▲ close</button>
+  </div>
+
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

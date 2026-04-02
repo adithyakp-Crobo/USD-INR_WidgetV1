@@ -1,5 +1,27 @@
 {
   "name": "usd-inr-widget",
   "version": "1.0.0",
-  "main": "main.js"
+  "description": "USD to INR live rate widget",
+  "main": "main.js",
+  "build": {
+    "appId": "com.usd-inr.widget",
+    "productName": "Rate Widget",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "scraper.js",
+      "preload.js",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.finance",
+      "target": [
+        { "target": "dmg", "arch": ["arm64", "x64"] }
+      ],
+      "icon": "icon.icns"
+    }
+  }
 }
